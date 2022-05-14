@@ -1,7 +1,7 @@
 {
-  "name": "searchservice",
-  "version": "1.0.69",
-  "description": "YTSearch Backend for Downablev3 and DownableReact",
+  "name": "downable-app",
+  "version": "1.15",
+  "description": "YouTube Downloader Backend and Frontend Server",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
