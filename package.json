@@ -1,0 +1,18 @@
+{
+  "name": "searchservice",
+  "version": "1.0.69",
+  "description": "YTSearch Backend for Downablev3 and DownableReact",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.1",
+    "express-async-handler": "^1.2.0",
+    "youtube-search-without-api-key": "^1.0.7",
+    "ytdl-core": "^4.11.0"
+  }
+}
