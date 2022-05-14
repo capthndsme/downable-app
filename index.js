@@ -1,20 +1,28 @@
 const yt = require("youtube-search-without-api-key");
 const fs = require("fs");
-const ytdl = require("ytdl-core");
 const express = require("express");
 const config = JSON.parse(fs.readFileSync("config.json"));
+
+console.log("[SearchService] Conf loaded: ", config);
 const asyncHandler = require("express-async-handler");
 var cors = require("cors");
 const app = express();
-const FileFetcher = require("./routes/FileFetcher.js")
-FileFetcher._CONF = config;
-const port = config.servicePort;
-const downloaderBackend = "http://192.168.1.244:24415/";
 
+// Routes
+const FileFetcher = require("./routes/FileFetcher.js");
+const Download = require("./routes/Download.js");
+const GetThumbnailProxy = require("./routes/GetThumbnailProxy.js");
+
+const port = config.servicePort;
+// Middleware
 app.use(cors());
+app.use(express.static("frontend"));
+
+//Routes
 app.get("/", (req, res) => {
   res.send("YouTube Search/Download Microservice.");
 });
+app.get("/download/:id", asyncHandler(Download.downloadYouTube));
 app.get(
   "/search/:query",
   asyncHandler(async (req, res, next) => {
@@ -30,29 +38,15 @@ app.get("/search", (req, res) => {
          <b>Returns</b> array of results`
   );
 });
-app.get(
-  "/download/:id",
-  asyncHandler(async (req, res, next) => {
-    let id = req.params.id;
-    if (fs.existsSync(`${config}/${id}_cache.mp3`)) {
-      let loadInfo = JSON.parse(fs.readFileSync(`${config}/${id}.json`));
-      res.send({
-        id: id,
-        title: loadInfo.title,
-        downloadUrl: downloaderBackend + `getCache/${id}_cache.mp3`,
-      });
-    }
-    let info = await ytdl.getInfo(id); 
-    ytdl.chooseFormat(info.formats, {quality: 140});
-    ytdl(`http://www.youtube.com/watch?v=${id}`).pipe(
-      fs.createWriteStream(`${config}/${id}_cache.mp3`)
-    );
-  })
-);
 
-app.get("/fetch/audio/:id", FileFetcher.GetAudio)
-app.get("/fetch/albumart/:id", FileFetcher.GetAlbumArt)
+app.get("/fetch/audio/:id", FileFetcher.GetAudio);
 
+app.get("/test", Download.test);
+
+app.get("/getAlbumArt/:id", asyncHandler(GetThumbnailProxy.GetThumbnailProxy));
 app.listen(port, () => {
   console.log(`YouTube search microservice started at port ${port}`);
 });
+
+// YT REGEX
+// var myregexp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/gi;

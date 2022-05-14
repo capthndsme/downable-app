@@ -1,20 +1,33 @@
 const fs = require("fs");
- function GetAudio(req, res, next) {
-    if (fs.existsSync(`${this._CONF}/${req.params.id}.mp3`)) {
-        res.download(`${this._CONF}/${req.params.id}.mp3`)
-    } else {
-        res.status(404).send('This file does not exist (yet) - Come back later');
-    }
+const config = JSON.parse(fs.readFileSync("config.json"));
+const { checkValidYTID } = require("../shared/YTIDMatch");
+ function GetAudio(req, res) {
+    if (req.params.id) {
+        if (checkValidYTID(req.params.id)) {
+
+            if (fs.existsSync(`${config.cacheFolder}/${req.params.id}_cache.mp3`)) {
+                res.download(`${config.cacheFolder}/${req.params.id}_cache.mp3`)
+            } else {
+                res.status(404).send('This file does not exist (yet) - Come back later');
+            }
+
+        } else {
+          res.send({
+              success: false,
+              message: "Invalid ID parameter.",
+            });
+        }
+      } else {
+        res.send({
+          success: false,
+          message: "Missing [id] parameter.",
+        });
+      }
+    
 }
- function GetAlbumArt(req, res, next) {
-    if (fs.existsSync(`${this._CONF}/${req.params.id}.jpg`)) {
-        res.download(`${this._CONF}/${req.params.id}.jpg`)
-    } else {
-        res.status(404).send('This file does not exist (yet) - Come back later');
-    }
-}
+ 
 
 module.exports = {
     GetAudio: GetAudio,
-    GetAlbumArt: GetAlbumArt    
+ 
 }
