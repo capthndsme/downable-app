@@ -22,7 +22,7 @@ module.exports = {
             success: true,
             audio: `/fetch/audio/${id}`,
             metadata: loadInfo,
-            lyrics: loadLyrics.lyrics,
+            lyrics: loadLyrics?loadLyrics.lyrics:null,
           });
         } else {
           let info = await ytdl.getBasicInfo(

@@ -1,11 +1,14 @@
+// Initialization
 const yt = require("youtube-search-without-api-key");
 const fs = require("fs");
 const express = require("express");
 const config = JSON.parse(fs.readFileSync("config.json"));
-
 console.log("[SearchService] Conf loaded: ", config);
+
 const asyncHandler = require("express-async-handler");
 var cors = require("cors");
+
+// App
 const app = express();
 
 // Routes
@@ -13,7 +16,9 @@ const FileFetcher = require("./routes/FileFetcher.js");
 const Download = require("./routes/Download.js");
 const GetThumbnailProxy = require("./routes/GetThumbnailProxy.js");
 
+// Port Config
 const port = config.servicePort;
+
 // Middleware
 app.use(cors());
 app.use(express.static("frontend"));
