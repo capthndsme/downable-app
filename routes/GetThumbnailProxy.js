@@ -8,6 +8,7 @@ module.exports = {
     if (req.params.id) {
       if (checkValidYTID(req.params.id)) {
         let baseUrl = `https://i.ytimg.com/vi/${req.params.id}/maxresdefault.jpg`;
+        let lowresBaseUrl = `https://img.youtube.com/vi/${req.params.id}/0.jpg`;
         let fileBaseUrl = `${config.cacheFolder}/${req.params.id}_art.jpg`;
         // Check if our file exists from the cache.
         if (fs.existsSync(fileBaseUrl)) {
@@ -19,13 +20,27 @@ module.exports = {
           const rereq = https.get(
             baseUrl,
             function (response) {
-              response.pipe(file);
+              if (response.statusCode === 404) {
+                const rereqtwo = https.get(
+                  lowresBaseUrl, function(rsp) {
+                    rsp.pipe(file);
 
-              // after download completed close filestream
-              file.on("finish", () => {
-                file.close();
-                res.download(fileBaseUrl);
-              });
+                    // after download completed close filestream
+                    file.on("finish", () => {
+                      file.close();
+                      res.download(fileBaseUrl);
+                    });
+                  });
+              } else {
+                response.pipe(file);
+
+                // after download completed close filestream
+                file.on("finish", () => {
+                  file.close();
+                  res.download(fileBaseUrl);
+                });
+              }
+              
             }
           );
           

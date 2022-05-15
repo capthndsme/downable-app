@@ -50,7 +50,7 @@ app.get("/test", Download.test);
 
 app.get("/getAlbumArt/:id", asyncHandler(GetThumbnailProxy.GetThumbnailProxy));
 app.listen(port, () => {
-  console.log(`YouTube search microservice started at port ${port}`);
+  console.log(`Downable-app started at port ${port}`);
 });
 
 // YT REGEX
